@@ -1,0 +1,39 @@
+.swipeable {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.swipeable:active {
+  cursor: grabbing;
+}
+
+.hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  border: 3px solid currentColor;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.rememberHint {
+  justify-content: flex-start;
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.forgetHint {
+  justify-content: flex-end;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
