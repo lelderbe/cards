@@ -17,3 +17,4 @@ rules:
     - Reference the related stage in docs/plan.md
   tasks:
     - Each task group ends with a verifiable check (test or manual check on iPhone)
+    - The last task adds a user-facing entry to the "Unreleased" section of CHANGELOG.md (Keep a Changelog groups, Russian prose)
