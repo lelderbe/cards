@@ -1,0 +1,49 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.deckTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.meta {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.inProgress {
+  color: var(--accent);
+  font-weight: 600;
+}

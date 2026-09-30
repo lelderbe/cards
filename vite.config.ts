@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -19,4 +19,8 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    // A time zone with DST, so session expiry is tested across a clock change.
+    env: { TZ: 'Europe/Berlin' },
+  },
 })

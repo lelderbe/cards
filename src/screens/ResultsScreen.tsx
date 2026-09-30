@@ -6,10 +6,10 @@ type ResultsScreenProps = {
   deck: Deck
   session: StudySession
   onRestart: () => void
-  onHome: () => void
+  onBackToDeck: () => void
 }
 
-export function ResultsScreen({ deck, session, onRestart, onHome }: ResultsScreenProps) {
+export function ResultsScreen({ deck, session, onRestart, onBackToDeck }: ResultsScreenProps) {
   const { firstTryCount, totalCards, repeated } = getResults(session, deck)
   const questionSide = getVisibleSide(session.direction, false)
   const answerSide = getVisibleSide(session.direction, true)
@@ -43,8 +43,8 @@ export function ResultsScreen({ deck, session, onRestart, onHome }: ResultsScree
         <button className={styles.primary} type="button" onClick={onRestart}>
           Пройти ещё раз
         </button>
-        <button className={styles.secondary} type="button" onClick={onHome}>
-          На старт
+        <button className={styles.secondary} type="button" onClick={onBackToDeck}>
+          К пачке
         </button>
       </div>
     </section>

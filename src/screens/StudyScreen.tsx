@@ -14,11 +14,18 @@ import styles from './StudyScreen.module.css'
 type StudyScreenProps = {
   deck: Deck
   initialSession: StudySession
+  onProgress: (session: StudySession) => void
   onFinish: (session: StudySession) => void
   onExit: () => void
 }
 
-export function StudyScreen({ deck, initialSession, onFinish, onExit }: StudyScreenProps) {
+export function StudyScreen({
+  deck,
+  initialSession,
+  onProgress,
+  onFinish,
+  onExit,
+}: StudyScreenProps) {
   const [session, setSession] = useState(initialSession)
   // Changes on every answer so the next card (even the same one) mounts fresh at the center.
   const [answerCount, setAnswerCount] = useState(0)
@@ -42,6 +49,7 @@ export function StudyScreen({ deck, initialSession, onFinish, onExit }: StudyScr
     }
 
     setSession(nextSession)
+    onProgress(nextSession)
     setAnswerCount((count) => count + 1)
   }
 

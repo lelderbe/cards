@@ -42,6 +42,28 @@ export function createSession(
   }
 }
 
+/**
+ * Prepares a saved session to be continued: the current card shows its question side,
+ * and cards no longer in the deck are dropped. Returns undefined if nothing is left to study.
+ */
+export function restoreSession(saved: StudySession, deck: Deck): StudySession | undefined {
+  const deckCardIds = new Set(deck.cards.map((card) => card.id))
+  const queue = saved.queue.filter((id) => deckCardIds.has(id))
+  if (queue.length === 0) return undefined
+
+  const forgotCounts = Object.fromEntries(
+    Object.entries(saved.forgotCounts).filter(([id]) => deckCardIds.has(id)),
+  )
+
+  return {
+    direction: saved.direction,
+    queue,
+    isFlipped: false,
+    forgotCounts,
+    totalCards: deck.cards.length,
+  }
+}
+
 export function studySessionReducer(
   session: StudySession,
   action: StudySessionAction,

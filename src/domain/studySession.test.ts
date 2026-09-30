@@ -5,6 +5,7 @@ import {
   getResults,
   getVisibleSide,
   isSessionFinished,
+  restoreSession,
   studySessionReducer,
   type StudySession,
   type StudySessionAction,
@@ -168,5 +169,40 @@ describe('getResults', () => {
       ['b', 2],
       ['a', 1],
     ])
+  })
+})
+
+describe('restoreSession', () => {
+  const saved: StudySession = {
+    direction: 'back-to-front',
+    queue: ['c', 'a', 'd'],
+    isFlipped: true,
+    forgotCounts: { a: 2, b: 1 },
+    totalCards: 4,
+  }
+
+  it('keeps the direction, queue order and forget counts', () => {
+    const restored = restoreSession(saved, deck)
+    expect(restored?.direction).toBe('back-to-front')
+    expect(restored?.queue).toEqual(['c', 'a', 'd'])
+    expect(restored?.forgotCounts).toEqual({ a: 2, b: 1 })
+    expect(restored?.totalCards).toBe(4)
+  })
+
+  it('shows the current card question side', () => {
+    expect(restoreSession(saved, deck)?.isFlipped).toBe(false)
+  })
+
+  it('drops cards that are no longer in the deck', () => {
+    const smallerDeck: Deck = { ...deck, cards: deck.cards.filter((card) => card.id !== 'a') }
+    const restored = restoreSession(saved, smallerDeck)
+    expect(restored?.queue).toEqual(['c', 'd'])
+    expect(restored?.forgotCounts).toEqual({ b: 1 })
+    expect(restored?.totalCards).toBe(3)
+  })
+
+  it('returns undefined when no queued card is left in the deck', () => {
+    const otherDeck: Deck = { ...deck, cards: [{ id: 'b', front: 'bread', back: 'хлеб' }] }
+    expect(restoreSession(saved, otherDeck)).toBeUndefined()
   })
 })
