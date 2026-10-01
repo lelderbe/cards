@@ -1,15 +1,8 @@
 schema: spec-driven
 
 context: |
-  Product: Cards — mobile-first PWA for reviewing flashcard decks (word ↔ translation) with tap-to-flip and swipes.
-  Product docs live in docs/ (product.md, decisions.md, plan.md, ideas.md); they are the source for scope and agreed decisions.
   One change per plan stage from docs/plan.md. Keep changes small and finishable; out-of-scope ideas go to docs/ideas.md.
-  Tech stack: Vite, React 19, TypeScript, CSS Modules (global variables in src/index.css), vite-plugin-pwa, Vitest, oxlint.
-  Target: iPhone Safari, installed to Home Screen (standalone). Portrait phone layout first.
-  UI language: Russian. Artifacts: Russian prose; requirement keywords (SHALL/MUST) and scenario keywords (WHEN/THEN) stay in English.
-  Priorities: simple UI, readable code over clever code, pure functions for domain logic (easy to test), minimal dependencies.
-  Code style: early returns, descriptive names, event handlers prefixed with "handle", no TS enums (use union types / objects), className is the first JSX attribute.
-  No backend until the AI generation stage; data is stored only on the device.
+  Artifacts: Russian prose; requirement keywords (SHALL/MUST) and scenario keywords (WHEN/THEN) stay in English.
 
 rules:
   proposal:
