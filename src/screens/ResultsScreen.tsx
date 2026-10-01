@@ -1,18 +1,18 @@
-import { getResults, getVisibleSide, type StudySession } from '../domain/studySession.ts'
-import type { Deck } from '../domain/types.ts'
-import styles from './ResultsScreen.module.css'
+import { getResults, getVisibleSide, type StudySession } from '../domain/studySession.ts';
+import type { Deck } from '../domain/types.ts';
+import styles from './ResultsScreen.module.css';
 
 type ResultsScreenProps = {
-  deck: Deck
-  session: StudySession
-  onRestart: () => void
-  onBackToDeck: () => void
-}
+  deck: Deck;
+  session: StudySession;
+  onRestart: () => void;
+  onBackToDeck: () => void;
+};
 
 export function ResultsScreen({ deck, session, onRestart, onBackToDeck }: ResultsScreenProps) {
-  const { firstTryCount, totalCards, repeated } = getResults(session, deck)
-  const questionSide = getVisibleSide(session.direction, false)
-  const answerSide = getVisibleSide(session.direction, true)
+  const { firstTryCount, totalCards, repeated } = getResults(session, deck);
+  const questionSide = getVisibleSide(session.direction, false);
+  const answerSide = getVisibleSide(session.direction, true);
 
   return (
     <section className={styles.screen}>
@@ -30,7 +30,8 @@ export function ResultsScreen({ deck, session, onRestart, onBackToDeck }: Result
             {repeated.map(({ card, forgotCount }) => (
               <li className={styles.item} key={card.id}>
                 <span className={styles.word}>
-                  {card[questionSide]} — <span className={styles.translation}>{card[answerSide]}</span>
+                  {card[questionSide]} —{' '}
+                  <span className={styles.translation}>{card[answerSide]}</span>
                 </span>
                 <span className={styles.forgotCount}>×{forgotCount}</span>
               </li>
@@ -48,5 +49,5 @@ export function ResultsScreen({ deck, session, onRestart, onBackToDeck }: Result
         </button>
       </div>
     </section>
-  )
+  );
 }

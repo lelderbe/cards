@@ -1,10 +1,10 @@
-import styles from './FlashCard.module.css'
+import styles from './FlashCard.module.css';
 
 type FlashCardProps = {
-  question: string
-  answer: string
-  isFlipped: boolean
-}
+  question: string;
+  answer: string;
+  isFlipped: boolean;
+};
 
 export function FlashCard({ question, answer, isFlipped }: FlashCardProps) {
   return (
@@ -18,5 +18,5 @@ export function FlashCard({ question, answer, isFlipped }: FlashCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,15 +1,15 @@
 export type Card = {
-  id: string
-  front: string
-  back: string
-}
+  id: string;
+  front: string;
+  back: string;
+};
 
 export type Deck = {
-  id: string
-  title: string
-  frontLang: 'en'
-  backLang: 'ru'
-  cards: Card[]
-}
+  id: string;
+  title: string;
+  frontLang: 'en';
+  backLang: 'ru';
+  cards: Card[];
+};
 
-export type Direction = 'front-to-back' | 'back-to-front'
+export type Direction = 'front-to-back' | 'back-to-front';

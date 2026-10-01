@@ -1,29 +1,29 @@
-import { shuffle } from './shuffle.ts'
-import type { Card, Deck, Direction } from './types.ts'
+import { shuffle } from './shuffle.ts';
+import type { Card, Deck, Direction } from './types.ts';
 
 export type StudySession = {
-  direction: Direction
+  direction: Direction;
   /** Card ids still to be remembered; the head is the current card. */
-  queue: string[]
-  isFlipped: boolean
-  forgotCounts: Record<string, number>
-  totalCards: number
-}
+  queue: string[];
+  isFlipped: boolean;
+  forgotCounts: Record<string, number>;
+  totalCards: number;
+};
 
-export type StudySessionAction = { type: 'flip' } | { type: 'answer'; remembered: boolean }
+export type StudySessionAction = { type: 'flip' } | { type: 'answer'; remembered: boolean };
 
-export type CardSide = 'front' | 'back'
+export type CardSide = 'front' | 'back';
 
 export type RepeatedCard = {
-  card: Card
-  forgotCount: number
-}
+  card: Card;
+  forgotCount: number;
+};
 
 export type StudyResults = {
-  firstTryCount: number
-  totalCards: number
-  repeated: RepeatedCard[]
-}
+  firstTryCount: number;
+  totalCards: number;
+  repeated: RepeatedCard[];
+};
 
 export function createSession(
   deck: Deck,
@@ -39,7 +39,7 @@ export function createSession(
     isFlipped: false,
     forgotCounts: {},
     totalCards: deck.cards.length,
-  }
+  };
 }
 
 /**
@@ -47,13 +47,13 @@ export function createSession(
  * and cards no longer in the deck are dropped. Returns undefined if nothing is left to study.
  */
 export function restoreSession(saved: StudySession, deck: Deck): StudySession | undefined {
-  const deckCardIds = new Set(deck.cards.map((card) => card.id))
-  const queue = saved.queue.filter((id) => deckCardIds.has(id))
-  if (queue.length === 0) return undefined
+  const deckCardIds = new Set(deck.cards.map((card) => card.id));
+  const queue = saved.queue.filter((id) => deckCardIds.has(id));
+  if (queue.length === 0) return undefined;
 
   const forgotCounts = Object.fromEntries(
     Object.entries(saved.forgotCounts).filter(([id]) => deckCardIds.has(id)),
-  )
+  );
 
   return {
     direction: saved.direction,
@@ -61,7 +61,7 @@ export function restoreSession(saved: StudySession, deck: Deck): StudySession | 
     isFlipped: false,
     forgotCounts,
     totalCards: deck.cards.length,
-  }
+  };
 }
 
 export function studySessionReducer(
@@ -69,14 +69,14 @@ export function studySessionReducer(
   action: StudySessionAction,
 ): StudySession {
   if (action.type === 'flip') {
-    return { ...session, isFlipped: !session.isFlipped }
+    return { ...session, isFlipped: !session.isFlipped };
   }
 
-  const [currentId, ...rest] = session.queue
-  if (currentId === undefined) return session
+  const [currentId, ...rest] = session.queue;
+  if (currentId === undefined) return session;
 
   if (action.remembered) {
-    return { ...session, queue: rest, isFlipped: false }
+    return { ...session, queue: rest, isFlipped: false };
   }
 
   return {
@@ -87,33 +87,33 @@ export function studySessionReducer(
       ...session.forgotCounts,
       [currentId]: (session.forgotCounts[currentId] ?? 0) + 1,
     },
-  }
+  };
 }
 
 export function getVisibleSide(direction: Direction, isFlipped: boolean): CardSide {
-  const questionSide: CardSide = direction === 'front-to-back' ? 'front' : 'back'
-  if (!isFlipped) return questionSide
-  return questionSide === 'front' ? 'back' : 'front'
+  const questionSide: CardSide = direction === 'front-to-back' ? 'front' : 'back';
+  if (!isFlipped) return questionSide;
+  return questionSide === 'front' ? 'back' : 'front';
 }
 
 export function getCurrentCard(session: StudySession, deck: Deck): Card | undefined {
-  const currentId = session.queue[0]
-  return deck.cards.find((card) => card.id === currentId)
+  const currentId = session.queue[0];
+  return deck.cards.find((card) => card.id === currentId);
 }
 
 export function isSessionFinished(session: StudySession): boolean {
-  return session.queue.length === 0
+  return session.queue.length === 0;
 }
 
 export function getResults(session: StudySession, deck: Deck): StudyResults {
   const repeated = deck.cards
     .filter((card) => (session.forgotCounts[card.id] ?? 0) > 0)
     .map((card) => ({ card, forgotCount: session.forgotCounts[card.id] }))
-    .sort((a, b) => b.forgotCount - a.forgotCount)
+    .sort((a, b) => b.forgotCount - a.forgotCount);
 
   return {
     firstTryCount: session.totalCards - repeated.length,
     totalCards: session.totalCards,
     repeated,
-  }
+  };
 }

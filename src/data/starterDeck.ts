@@ -1,4 +1,4 @@
-import type { Deck } from '../domain/types.ts'
+import type { Deck } from '../domain/types.ts';
 
 const words: Array<[string, string]> = [
   ['airport', 'аэропорт'],
@@ -26,7 +26,7 @@ const words: Array<[string, string]> = [
   ['journey', 'поездка'],
   ['destination', 'пункт назначения'],
   ['backpack', 'рюкзак'],
-]
+];
 
 export const starterDeck: Deck = {
   id: 'starter-travel',
@@ -38,4 +38,4 @@ export const starterDeck: Deck = {
     front,
     back,
   })),
-}
+};

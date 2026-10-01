@@ -1,23 +1,23 @@
-import { useRef, useState } from 'react'
-import { FlashCard } from '../components/FlashCard.tsx'
-import { SwipeableCard, type SwipeableCardHandle } from '../components/SwipeableCard.tsx'
+import { useRef, useState } from 'react';
+import { FlashCard } from '../components/FlashCard.tsx';
+import { SwipeableCard, type SwipeableCardHandle } from '../components/SwipeableCard.tsx';
 import {
   getCurrentCard,
   getVisibleSide,
   isSessionFinished,
   studySessionReducer,
   type StudySession,
-} from '../domain/studySession.ts'
-import type { Deck } from '../domain/types.ts'
-import styles from './StudyScreen.module.css'
+} from '../domain/studySession.ts';
+import type { Deck } from '../domain/types.ts';
+import styles from './StudyScreen.module.css';
 
 type StudyScreenProps = {
-  deck: Deck
-  initialSession: StudySession
-  onProgress: (session: StudySession) => void
-  onFinish: (session: StudySession) => void
-  onExit: () => void
-}
+  deck: Deck;
+  initialSession: StudySession;
+  onProgress: (session: StudySession) => void;
+  onFinish: (session: StudySession) => void;
+  onExit: () => void;
+};
 
 export function StudyScreen({
   deck,
@@ -26,31 +26,31 @@ export function StudyScreen({
   onFinish,
   onExit,
 }: StudyScreenProps) {
-  const [session, setSession] = useState(initialSession)
+  const [session, setSession] = useState(initialSession);
   // Changes on every answer so the next card (even the same one) mounts fresh at the center.
-  const [answerCount, setAnswerCount] = useState(0)
-  const cardRef = useRef<SwipeableCardHandle>(null)
+  const [answerCount, setAnswerCount] = useState(0);
+  const cardRef = useRef<SwipeableCardHandle>(null);
 
-  const card = getCurrentCard(session, deck)
-  if (!card) return null
+  const card = getCurrentCard(session, deck);
+  if (!card) return null;
 
-  const question = card[getVisibleSide(session.direction, false)]
-  const answer = card[getVisibleSide(session.direction, true)]
+  const question = card[getVisibleSide(session.direction, false)];
+  const answer = card[getVisibleSide(session.direction, true)];
 
   function handleFlip() {
-    setSession((current) => studySessionReducer(current, { type: 'flip' }))
+    setSession((current) => studySessionReducer(current, { type: 'flip' }));
   }
 
   function handleAnswer(remembered: boolean) {
-    const nextSession = studySessionReducer(session, { type: 'answer', remembered })
+    const nextSession = studySessionReducer(session, { type: 'answer', remembered });
     if (isSessionFinished(nextSession)) {
-      onFinish(nextSession)
-      return
+      onFinish(nextSession);
+      return;
     }
 
-    setSession(nextSession)
-    onProgress(nextSession)
-    setAnswerCount((count) => count + 1)
+    setSession(nextSession);
+    onProgress(nextSession);
+    setAnswerCount((count) => count + 1);
   }
 
   return (
@@ -63,12 +63,7 @@ export function StudyScreen({
       </header>
 
       <div className={styles.cardArea}>
-        <SwipeableCard
-          key={answerCount}
-          ref={cardRef}
-          onTap={handleFlip}
-          onAnswer={handleAnswer}
-        >
+        <SwipeableCard key={answerCount} ref={cardRef} onTap={handleFlip} onAnswer={handleAnswer}>
           <FlashCard question={question} answer={answer} isFlipped={session.isFlipped} />
         </SwipeableCard>
       </div>
@@ -90,5 +85,5 @@ export function StudyScreen({
         </button>
       </div>
     </section>
-  )
+  );
 }

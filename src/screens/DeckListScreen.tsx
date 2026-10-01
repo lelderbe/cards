@@ -1,26 +1,26 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { StatusMessage } from '../components/StatusMessage.tsx'
-import { db } from '../storage/db.ts'
-import { formatCardCount } from './format.ts'
-import styles from './DeckListScreen.module.css'
+import { useLiveQuery } from 'dexie-react-hooks';
+import { StatusMessage } from '../components/StatusMessage.tsx';
+import { db } from '../storage/db.ts';
+import { formatCardCount } from './format.ts';
+import styles from './DeckListScreen.module.css';
 
 type DeckListScreenProps = {
-  onOpenDeck: (deckId: string) => void
-}
+  onOpenDeck: (deckId: string) => void;
+};
 
 export function DeckListScreen({ onOpenDeck }: DeckListScreenProps) {
   const data = useLiveQuery(async () => {
     const [decks, savedSessions] = await Promise.all([
       db.decks.toArray(),
       db.activeSessions.toArray(),
-    ])
+    ]);
     const remainingByDeckId = new Map(
       savedSessions.map((saved) => [saved.deckId, saved.session.queue.length]),
-    )
-    return { decks, remainingByDeckId }
-  })
+    );
+    return { decks, remainingByDeckId };
+  });
 
-  if (!data) return <StatusMessage title="Загрузка…" />
+  if (!data) return <StatusMessage title="Загрузка…" />;
 
   return (
     <section className={styles.screen}>
@@ -28,7 +28,7 @@ export function DeckListScreen({ onOpenDeck }: DeckListScreenProps) {
 
       <ul className={styles.list}>
         {data.decks.map((deck) => {
-          const remaining = data.remainingByDeckId.get(deck.id)
+          const remaining = data.remainingByDeckId.get(deck.id);
           return (
             <li key={deck.id}>
               <button className={styles.deck} type="button" onClick={() => onOpenDeck(deck.id)}>
@@ -41,9 +41,9 @@ export function DeckListScreen({ onOpenDeck }: DeckListScreenProps) {
                 </span>
               </button>
             </li>
-          )
+          );
         })}
       </ul>
     </section>
-  )
+  );
 }

@@ -1,38 +1,38 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
-import { StatusMessage } from '../components/StatusMessage.tsx'
-import { restoreSession, type StudySession } from '../domain/studySession.ts'
-import type { Deck, Direction } from '../domain/types.ts'
-import { db } from '../storage/db.ts'
-import { formatCardCount, formatDirection } from './format.ts'
-import styles from './DeckScreen.module.css'
+import { useLiveQuery } from 'dexie-react-hooks';
+import { useState } from 'react';
+import { StatusMessage } from '../components/StatusMessage.tsx';
+import { restoreSession, type StudySession } from '../domain/studySession.ts';
+import type { Deck, Direction } from '../domain/types.ts';
+import { db } from '../storage/db.ts';
+import { formatCardCount, formatDirection } from './format.ts';
+import styles from './DeckScreen.module.css';
 
 type DeckScreenProps = {
-  deckId: string
-  lastDirection: Direction
-  onBack: () => void
-  onStart: (deck: Deck, direction: Direction) => void
-  onContinue: (deck: Deck, session: StudySession) => void
-}
+  deckId: string;
+  lastDirection: Direction;
+  onBack: () => void;
+  onStart: (deck: Deck, direction: Direction) => void;
+  onContinue: (deck: Deck, session: StudySession) => void;
+};
 
 export function DeckScreen({ deckId, ...props }: DeckScreenProps) {
   const data = useLiveQuery(async () => {
-    const [deck, saved] = await Promise.all([db.decks.get(deckId), db.activeSessions.get(deckId)])
-    return { deck, saved }
-  }, [deckId])
+    const [deck, saved] = await Promise.all([db.decks.get(deckId), db.activeSessions.get(deckId)]);
+    return { deck, saved };
+  }, [deckId]);
 
-  if (!data) return <StatusMessage title="Загрузка…" />
-  if (!data.deck) return <StatusMessage title="Пачка не найдена" />
+  if (!data) return <StatusMessage title="Загрузка…" />;
+  if (!data.deck) return <StatusMessage title="Пачка не найдена" />;
 
-  const unfinishedSession = data.saved && restoreSession(data.saved.session, data.deck)
+  const unfinishedSession = data.saved && restoreSession(data.saved.session, data.deck);
 
-  return <DeckDetails deck={data.deck} unfinishedSession={unfinishedSession} {...props} />
+  return <DeckDetails deck={data.deck} unfinishedSession={unfinishedSession} {...props} />;
 }
 
 type DeckDetailsProps = Omit<DeckScreenProps, 'deckId'> & {
-  deck: Deck
-  unfinishedSession: StudySession | undefined
-}
+  deck: Deck;
+  unfinishedSession: StudySession | undefined;
+};
 
 function DeckDetails({
   deck,
@@ -45,12 +45,12 @@ function DeckDetails({
   // Applies to a new session only; "Продолжить" keeps the unfinished session's direction.
   const [direction, setDirection] = useState<Direction>(
     unfinishedSession?.direction ?? lastDirection,
-  )
+  );
 
-  const directionOptions: Direction[] = ['front-to-back', 'back-to-front']
+  const directionOptions: Direction[] = ['front-to-back', 'back-to-front'];
 
   function handleStart() {
-    onStart(deck, direction)
+    onStart(deck, direction);
   }
 
   return (
@@ -106,5 +106,5 @@ function DeckDetails({
         )}
       </div>
     </section>
-  )
+  );
 }
