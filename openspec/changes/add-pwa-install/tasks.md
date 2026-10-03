@@ -14,8 +14,8 @@
 ## 3. Деплой на Vercel
 
 - [x] 3.1 Добавить `vercel.json`: `framework: "vite"`, `buildCommand: "npm run build"`, `outputDirectory: "dist"`, заголовки `Cache-Control` — `max-age=0, must-revalidate` для `/sw.js`, `/registerSW.js`, `/index.html`, `/manifest.webmanifest`; `max-age=31536000, immutable` для `/assets/(.*)`; проверка: JSON валиден (`node -e "JSON.parse(require('fs').readFileSync('vercel.json'))"`), сборка проходит
-- [ ] 3.2 (Автор) Создать проект в Vercel из репозитория `lelderbe/cards`, Production Branch — `master`; запушить ветку изменения / `develop`; проверка: превью-деплой собрался, адрес открывается по HTTPS, `http://` перенаправляет на `https://`
-- [ ] 3.3 Проверить заголовки на превью-адресе: `curl -sI <url>/sw.js` и `curl -sI <url>/assets/<файл>.js`; проверка: `Cache-Control` совпадает с `vercel.json`
+- [x] 3.2 (Автор) Создать проект в Vercel из репозитория `lelderbe/cards`, Production Branch — `master`; запушить ветку изменения / `develop`; проверка: превью-деплой собрался, адрес открывается по HTTPS, `http://` перенаправляет на `https://`
+- [x] 3.3 Проверить заголовки на превью-адресе: `curl -sI <url>/sw.js` и `curl -sI <url>/assets/<файл>.js`; проверка: `Cache-Control` совпадает с `vercel.json`
 
 ## 4. Проверка на iPhone
 

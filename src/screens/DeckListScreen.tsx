@@ -24,7 +24,7 @@ export function DeckListScreen({ onOpenDeck }: DeckListScreenProps) {
 
   return (
     <section className={styles.screen}>
-      <h1 className={styles.title}>Пачки</h1>
+      <h1 className={styles.title}>Пачки · обновление</h1>
 
       <ul className={styles.list}>
         {data.decks.map((deck) => {
