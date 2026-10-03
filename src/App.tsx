@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StatusMessage } from './components/StatusMessage.tsx';
+import type { AnswerLogEntry } from './domain/answerLog.ts';
 import { createSession, type StudySession } from './domain/studySession.ts';
 import type { Deck, Direction } from './domain/types.ts';
 import { DeckListScreen } from './screens/DeckListScreen.tsx';
@@ -7,11 +8,8 @@ import { DeckScreen } from './screens/DeckScreen.tsx';
 import { ResultsScreen } from './screens/ResultsScreen.tsx';
 import { StudyScreen } from './screens/StudyScreen.tsx';
 import { db } from './storage/db.ts';
-import {
-  deleteActiveSession,
-  deleteExpiredSessions,
-  saveActiveSession,
-} from './storage/sessions.ts';
+import { recordAnswer } from './storage/answerLog.ts';
+import { deleteActiveSession, deleteExpiredSessions } from './storage/sessions.ts';
 
 type StorageStatus = 'opening' | 'ready' | 'failed';
 
@@ -57,12 +55,12 @@ function App() {
     showSession(deck, session);
   }
 
-  function handleProgress(deck: Deck, session: StudySession) {
-    saveActiveSession(deck.id, session, Date.now()).catch(logSaveError);
+  function handleProgress(session: StudySession, entry: AnswerLogEntry) {
+    recordAnswer(entry, session).catch(logSaveError);
   }
 
-  function handleFinish(deck: Deck, session: StudySession) {
-    deleteActiveSession(deck.id).catch(logSaveError);
+  function handleFinish(deck: Deck, session: StudySession, entry: AnswerLogEntry) {
+    recordAnswer(entry, session).catch(logSaveError);
     setState({ screen: 'results', deck, session });
   }
 
@@ -110,8 +108,8 @@ function App() {
           key={state.sessionNumber}
           deck={state.deck}
           initialSession={state.session}
-          onProgress={(session) => handleProgress(state.deck, session)}
-          onFinish={(session) => handleFinish(state.deck, session)}
+          onProgress={handleProgress}
+          onFinish={(session, entry) => handleFinish(state.deck, session, entry)}
           onExit={() => openDeck(state.deck.id)}
         />
       )}

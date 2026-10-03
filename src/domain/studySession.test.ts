@@ -45,6 +45,17 @@ describe('createSession', () => {
     expect(session.forgotCounts).toEqual({});
   });
 
+  it('takes the session id from the given generator', () => {
+    const session = createSession(deck, 'front-to-back', keepOrder, () => 'session-1');
+    expect(session.id).toBe('session-1');
+  });
+
+  it('gives every new session its own id', () => {
+    expect(createSession(deck, 'front-to-back').id).not.toBe(
+      createSession(deck, 'front-to-back').id,
+    );
+  });
+
   it('shuffles with the given random', () => {
     const session = createSession(deck, 'front-to-back', () => 0);
     expect(session.queue).not.toEqual(['a', 'b', 'c', 'd']);
@@ -86,6 +97,11 @@ describe('studySessionReducer', () => {
     const start = createSession(deck, 'front-to-back', keepOrder);
     expect(run(start, [flip, remember]).isFlipped).toBe(false);
     expect(run(start, [flip, forget]).isFlipped).toBe(false);
+  });
+
+  it('keeps the session id through flips and answers', () => {
+    const start = createSession(deck, 'front-to-back', keepOrder, () => 'session-1');
+    expect(run(start, [flip, forget, remember, flip, remember]).id).toBe('session-1');
   });
 
   it('accepts an answer without flipping', () => {
@@ -174,6 +190,7 @@ describe('getResults', () => {
 
 describe('restoreSession', () => {
   const saved: StudySession = {
+    id: 'session-1',
     direction: 'back-to-front',
     queue: ['c', 'a', 'd'],
     isFlipped: true,
@@ -181,8 +198,9 @@ describe('restoreSession', () => {
     totalCards: 4,
   };
 
-  it('keeps the direction, queue order and forget counts', () => {
+  it('keeps the id, direction, queue order and forget counts', () => {
     const restored = restoreSession(saved, deck);
+    expect(restored?.id).toBe('session-1');
     expect(restored?.direction).toBe('back-to-front');
     expect(restored?.queue).toEqual(['c', 'a', 'd']);
     expect(restored?.forgotCounts).toEqual({ a: 2, b: 1 });

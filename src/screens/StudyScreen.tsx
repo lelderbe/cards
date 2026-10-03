@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FlashCard } from '../components/FlashCard.tsx';
 import { SwipeableCard, type SwipeableCardHandle } from '../components/SwipeableCard.tsx';
+import { createAnswerLogEntry, type AnswerLogEntry } from '../domain/answerLog.ts';
 import {
   getCurrentCard,
   getVisibleSide,
@@ -14,8 +15,8 @@ import styles from './StudyScreen.module.css';
 type StudyScreenProps = {
   deck: Deck;
   initialSession: StudySession;
-  onProgress: (session: StudySession) => void;
-  onFinish: (session: StudySession) => void;
+  onProgress: (session: StudySession, entry: AnswerLogEntry) => void;
+  onFinish: (session: StudySession, entry: AnswerLogEntry) => void;
   onExit: () => void;
 };
 
@@ -30,6 +31,12 @@ export function StudyScreen({
   // Changes on every answer so the next card (even the same one) mounts fresh at the center.
   const [answerCount, setAnswerCount] = useState(0);
   const cardRef = useRef<SwipeableCardHandle>(null);
+  // performance.now() when the current card was shown; the answer time is counted from it.
+  const cardShownAtRef = useRef(0);
+
+  useEffect(() => {
+    cardShownAtRef.current = performance.now();
+  }, []);
 
   const card = getCurrentCard(session, deck);
   if (!card) return null;
@@ -42,14 +49,22 @@ export function StudyScreen({
   }
 
   function handleAnswer(remembered: boolean) {
+    const now = performance.now();
+    const entry = createAnswerLogEntry(deck.id, session, remembered, {
+      answeredAt: Date.now(),
+      durationMs: Math.round(now - cardShownAtRef.current),
+    });
+    // The next card mounts right after this answer.
+    cardShownAtRef.current = now;
+
     const nextSession = studySessionReducer(session, { type: 'answer', remembered });
     if (isSessionFinished(nextSession)) {
-      onFinish(nextSession);
+      onFinish(nextSession, entry);
       return;
     }
 
     setSession(nextSession);
-    onProgress(nextSession);
+    onProgress(nextSession, entry);
     setAnswerCount((count) => count + 1);
   }
 

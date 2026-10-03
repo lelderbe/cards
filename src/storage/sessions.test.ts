@@ -11,6 +11,7 @@ import {
 } from './sessions.ts';
 
 const session: StudySession = {
+  id: 'session-1',
   direction: 'back-to-front',
   queue: ['b', 'c', 'a'],
   isFlipped: false,

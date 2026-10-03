@@ -1,7 +1,10 @@
+import { createId } from './id.ts';
 import { shuffle } from './shuffle.ts';
 import type { Card, Deck, Direction } from './types.ts';
 
 export type StudySession = {
+  /** Stays the same when the session is continued; links its answers in the answer log. */
+  id: string;
   direction: Direction;
   /** Card ids still to be remembered; the head is the current card. */
   queue: string[];
@@ -29,8 +32,10 @@ export function createSession(
   deck: Deck,
   direction: Direction,
   random: () => number = Math.random,
+  createSessionId: () => string = createId,
 ): StudySession {
   return {
+    id: createSessionId(),
     direction,
     queue: shuffle(
       deck.cards.map((card) => card.id),
@@ -56,6 +61,7 @@ export function restoreSession(saved: StudySession, deck: Deck): StudySession | 
   );
 
   return {
+    id: saved.id,
     direction: saved.direction,
     queue,
     isFlipped: false,
