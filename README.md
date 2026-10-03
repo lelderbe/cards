@@ -16,3 +16,24 @@ npm run dev -- --host   # открыть на телефоне по адресу
 npm run build
 npm test
 ```
+
+## Приложение
+
+https://cards-lake-theta.vercel.app — открыть в Safari на iPhone → «Поделиться» → «На экран Домой».
+
+## Деплой
+
+Vercel с Git-интеграцией, настройки — в [vercel.json](vercel.json):
+
+- `master` → прод;
+- `develop` → превью https://cards-git-develop-lelderbes-projects.vercel.app, остальные ветки — превью со своими адресами.
+
+У каждого адреса своё хранилище на устройстве: данные превью и прода не пересекаются.
+
+## Иконки
+
+Исходник — [public/icon.svg](public/icon.svg). PNG и `favicon.ico` в `public/` генерируются по [pwa-assets.config.js](pwa-assets.config.js) и коммитятся:
+
+```bash
+npx @vite-pwa/assets-generator
+```
