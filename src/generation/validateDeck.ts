@@ -1,5 +1,4 @@
-import { cardKey } from '../domain/deckDraft.ts';
-import type { GeneratedDeck } from './generator.ts';
+import type { GeneratedDeck } from './generator.js';
 
 export const MAX_TOPIC_LENGTH = 100;
 export const MAX_CARDS = 100;
@@ -34,7 +33,8 @@ export function validateGeneratedDeck(value: unknown): GeneratedDeck | null {
 
     const front = card.front.trim();
     const back = card.back.trim();
-    const key = cardKey(front, back);
+    // The same match as cardKey in domain/deckDraft.ts, which the server code cannot import.
+    const key = `${front.toLowerCase()}\n${back.toLowerCase()}`;
     if (front === '' || back === '' || seenKeys.has(key)) continue;
 
     seenKeys.add(key);

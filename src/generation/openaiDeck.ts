@@ -1,5 +1,5 @@
-import type { GeneratedDeck } from './generator.ts';
-import { isRecord, MAX_CARDS, validateGeneratedDeck } from './validateDeck.ts';
+import type { GeneratedDeck } from './generator.js';
+import { isRecord, MAX_CARDS, validateGeneratedDeck } from './validateDeck.js';
 
 export const DEFAULT_MODEL = 'gpt-6-luna';
 export const OPENAI_TIMEOUT_MS = 55_000;

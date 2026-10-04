@@ -1,6 +1,9 @@
-import { ACCESS_CODE_HEADER, type AccessCodeProblem } from './generator.ts';
-import { DEFAULT_MODEL, generateWithOpenAI } from './openaiDeck.ts';
-import { isRecord, validateTopic } from './validateDeck.ts';
+// Runs on Vercel, which compiles each .ts file to .js but keeps import paths as written: modules
+// the server loads (this one, openaiDeck, validateDeck, generator) import each other with .js and
+// nothing outside src/generation/.
+import { ACCESS_CODE_HEADER, type AccessCodeProblem } from './generator.js';
+import { DEFAULT_MODEL, generateWithOpenAI } from './openaiDeck.js';
+import { isRecord, validateTopic } from './validateDeck.js';
 
 export type GenerateEnv = {
   OPENAI_API_KEY?: string;
