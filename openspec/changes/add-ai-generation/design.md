@@ -68,6 +68,7 @@ export function createApiGenerator({ fetch, getAccessCode }): DeckGenerator
 ```
 
 - `POST /api/generate` с `{ topic }`, `signal` из экрана — «Отмена» обрывает запрос.
+- Сеть: Safari на iPhone в авиарежиме не отклоняет `fetch`, а ждёт подключения. Поэтому при `navigator.onLine === false` генератор сразу отвечает `network`, событие `offline` во время запроса обрывает его как `network`, а свой таймаут 70 с (чуть дольше функции) даёт `failed`.
 - Сопоставление: `TypeError` от `fetch` (нет сети) → `network`; `401` → `unauthorized` с `reason` из тела; прочие не-2xx или ответ, не прошедший `validateGeneratedDeck`, → `failed`; `AbortError` пробрасывается как есть. Ответ сервера проверяется ещё раз той же функцией — дёшево и защищает от старой версии функции.
 - `generateDeck.ts` выбирает: `import.meta.env.VITE_GENERATOR === 'mock'` → мок, иначе `createApiGenerator`. Переменная читается при сборке, на Vercel не задаётся — в прод мок не попадает (условие сворачивается, мок вырезается tree-shaking).
 

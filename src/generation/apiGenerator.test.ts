@@ -8,6 +8,25 @@ function serverFetch(status: number, body: unknown) {
   return vi.fn<typeof fetch>(async () => Response.json(body, { status }));
 }
 
+function apiGenerator(options: Parameters<typeof createApiGenerator>[0]) {
+  return createApiGenerator({
+    isOnline: () => true,
+    connectionEvents: new EventTarget(),
+    ...options,
+  });
+}
+
+function hangingFetch() {
+  return vi.fn<typeof fetch>(
+    (_, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () =>
+          reject(new DOMException('Aborted', 'AbortError')),
+        );
+      }),
+  );
+}
+
 function signal() {
   return new AbortController().signal;
 }
@@ -22,7 +41,7 @@ async function failureOf(promise: Promise<unknown>) {
 describe('createApiGenerator', () => {
   it('sends the topic with the access code and returns the deck', async () => {
     const fetch = serverFetch(200, kitchen);
-    const generate = createApiGenerator({ fetch, getAccessCode: () => 'secret-code' });
+    const generate = apiGenerator({ fetch, getAccessCode: () => 'secret-code' });
 
     expect(await generate('кухня', signal())).toEqual(kitchen);
     const [url, init] = fetch.mock.calls[0];
@@ -33,7 +52,7 @@ describe('createApiGenerator', () => {
 
   it('sends no access code header when the device has none', async () => {
     const fetch = serverFetch(200, kitchen);
-    const generate = createApiGenerator({ fetch, getAccessCode: () => null });
+    const generate = apiGenerator({ fetch, getAccessCode: () => null });
 
     await generate('кухня', signal());
 
@@ -44,7 +63,7 @@ describe('createApiGenerator', () => {
     const offlineFetch = vi.fn<typeof fetch>(async () => {
       throw new TypeError('Load failed');
     });
-    const generate = createApiGenerator({ fetch: offlineFetch, getAccessCode: () => null });
+    const generate = apiGenerator({ fetch: offlineFetch, getAccessCode: () => null });
 
     expect(await failureOf(generate('кухня', signal()))).toEqual({
       kind: 'network',
@@ -53,11 +72,11 @@ describe('createApiGenerator', () => {
   });
 
   it('tells a missing code from a wrong one', async () => {
-    const missing = createApiGenerator({
+    const missing = apiGenerator({
       fetch: serverFetch(401, { error: 'missing_code' }),
       getAccessCode: () => null,
     });
-    const wrong = createApiGenerator({
+    const wrong = apiGenerator({
       fetch: serverFetch(401, { error: 'wrong_code' }),
       getAccessCode: () => 'guess',
     });
@@ -79,7 +98,7 @@ describe('createApiGenerator', () => {
       [200, { title: 'Кухня', cards: [] }],
       [200, 'not a deck'],
     ] as const) {
-      const generate = createApiGenerator({
+      const generate = apiGenerator({
         fetch: serverFetch(status, body),
         getAccessCode: () => 'secret-code',
       });
@@ -89,20 +108,44 @@ describe('createApiGenerator', () => {
   });
 
   it('rejects with an AbortError when cancelled', async () => {
-    const hangingFetch = vi.fn<typeof fetch>(
-      (_, init) =>
-        new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener('abort', () =>
-            reject(new DOMException('Aborted', 'AbortError')),
-          );
-        }),
-    );
-    const generate = createApiGenerator({ fetch: hangingFetch, getAccessCode: () => null });
+    const generate = apiGenerator({ fetch: hangingFetch(), getAccessCode: () => null });
     const controller = new AbortController();
 
     const result = generate('кухня', controller.signal);
     controller.abort();
 
     await expect(result).rejects.toMatchObject({ name: 'AbortError' });
+  });
+
+  it('fails as offline right away when the device is offline', async () => {
+    const fetch = serverFetch(200, kitchen);
+    const generate = apiGenerator({ fetch, getAccessCode: () => null, isOnline: () => false });
+
+    expect((await failureOf(generate('кухня', signal()))).kind).toBe('network');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('fails as offline when the connection drops during the request', async () => {
+    const connectionEvents = new EventTarget();
+    const generate = apiGenerator({
+      fetch: hangingFetch(),
+      getAccessCode: () => null,
+      connectionEvents,
+    });
+
+    const result = generate('кухня', signal());
+    connectionEvents.dispatchEvent(new Event('offline'));
+
+    expect((await failureOf(result)).kind).toBe('network');
+  });
+
+  it('fails when the server does not answer in time', async () => {
+    const generate = apiGenerator({
+      fetch: hangingFetch(),
+      getAccessCode: () => null,
+      timeoutMs: 10,
+    });
+
+    expect((await failureOf(generate('кухня', signal()))).kind).toBe('failed');
   });
 });
