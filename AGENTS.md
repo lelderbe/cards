@@ -8,7 +8,7 @@ Cards — mobile-first PWA для повторения карточек (сло�
 
 - Цель: iPhone Safari, установка на Home Screen (standalone). Сначала портретная раскладка телефона.
 - Язык интерфейса — русский.
-- Бэкенда нет до этапа ИИ-генерации; данные хранятся только на устройстве (IndexedDB через Dexie).
+- Данные хранятся только на устройстве (IndexedDB через Dexie). Сервер — одна функция Vercel `/api/generate`: составляет пачку через OpenAI, ключ провайдера живёт только в её переменных окружения.
 - Продуктовые документы — источник объёма работ и принятых решений:
   [docs/product.md](docs/product.md), [docs/decisions.md](docs/decisions.md), [docs/plan.md](docs/plan.md), [docs/ideas.md](docs/ideas.md).
 
@@ -16,7 +16,7 @@ Cards — mobile-first PWA для повторения карточек (сло�
 
 Vite, React 19, TypeScript, CSS Modules (глобальные переменные в `src/index.css`), vite-plugin-pwa, Dexie, motion, Vitest, oxlint, Prettier.
 
-Структура `src/`: `domain/` — чистая доменная логика, `storage/` — работа с IndexedDB, `screens/` — экраны, `components/` — переиспользуемые компоненты, `data/` — встроенные колоды, `generation/` — генератор пачек по теме (интерфейс и реализации).
+Структура `src/`: `domain/` — чистая доменная логика, `storage/` — работа с IndexedDB, `screens/` — экраны, `components/` — переиспользуемые компоненты, `data/` — встроенные колоды, `generation/` — генератор пачек по теме (интерфейс, мок, запрос к серверу и логика серверной функции). В корне `api/` — функции Vercel; это тонкие обёртки над кодом из `src/generation/`, тесты — рядом с ним (файл в `api/` Vercel считает функцией).
 
 ## Команды
 

@@ -76,3 +76,11 @@
   opacity: 0.4;
   cursor: default;
 }
+
+.codeField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  text-align: left;
+}

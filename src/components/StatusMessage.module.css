@@ -44,3 +44,8 @@
   background: none;
   color: var(--accent);
 }
+
+.primary:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
