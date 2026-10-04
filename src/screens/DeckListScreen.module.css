@@ -20,7 +20,8 @@
   list-style: none;
 }
 
-.deck {
+.deck,
+.allCards {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -31,6 +32,13 @@
   background: var(--surface);
   text-align: left;
   cursor: pointer;
+}
+
+/* Not a deck of its own but every card, so it stands apart from the decks. */
+.allCards {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
 }
 
 .deckTitle {
@@ -46,4 +54,21 @@
 .inProgress {
   color: var(--accent);
   font-weight: 600;
+}
+
+.empty {
+  margin: 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.create {
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
 }

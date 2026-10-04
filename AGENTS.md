@@ -16,7 +16,7 @@ Cards — mobile-first PWA для повторения карточек (сло�
 
 Vite, React 19, TypeScript, CSS Modules (глобальные переменные в `src/index.css`), vite-plugin-pwa, Dexie, motion, Vitest, oxlint, Prettier.
 
-Структура `src/`: `domain/` — чистая доменная логика, `storage/` — работа с IndexedDB, `screens/` — экраны, `components/` — переиспользуемые компоненты, `data/` — встроенные колоды.
+Структура `src/`: `domain/` — чистая доменная логика, `storage/` — работа с IndexedDB, `screens/` — экраны, `components/` — переиспользуемые компоненты, `data/` — встроенные колоды, `generation/` — генератор пачек по теме (интерфейс и реализации).
 
 ## Команды
 

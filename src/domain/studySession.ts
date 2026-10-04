@@ -10,6 +10,8 @@ export type StudySession = {
   queue: string[];
   isFlipped: boolean;
   forgotCounts: Record<string, number>;
+  /** Cards the session started with; cards added to the deck later do not join it. */
+  cardIds: string[];
   totalCards: number;
 };
 
@@ -34,22 +36,22 @@ export function createSession(
   random: () => number = Math.random,
   createSessionId: () => string = createId,
 ): StudySession {
+  const cardIds = deck.cards.map((card) => card.id);
   return {
     id: createSessionId(),
     direction,
-    queue: shuffle(
-      deck.cards.map((card) => card.id),
-      random,
-    ),
+    queue: shuffle(cardIds, random),
     isFlipped: false,
     forgotCounts: {},
-    totalCards: deck.cards.length,
+    cardIds,
+    totalCards: cardIds.length,
   };
 }
 
 /**
  * Prepares a saved session to be continued: the current card shows its question side,
- * and cards no longer in the deck are dropped. Returns undefined if nothing is left to study.
+ * cards no longer in the deck are dropped, and cards added to the deck after the start stay out.
+ * Returns undefined if nothing is left to study.
  */
 export function restoreSession(saved: StudySession, deck: Deck): StudySession | undefined {
   const deckCardIds = new Set(deck.cards.map((card) => card.id));
@@ -59,6 +61,7 @@ export function restoreSession(saved: StudySession, deck: Deck): StudySession | 
   const forgotCounts = Object.fromEntries(
     Object.entries(saved.forgotCounts).filter(([id]) => deckCardIds.has(id)),
   );
+  const cardIds = saved.cardIds.filter((id) => deckCardIds.has(id));
 
   return {
     id: saved.id,
@@ -66,7 +69,8 @@ export function restoreSession(saved: StudySession, deck: Deck): StudySession | 
     queue,
     isFlipped: false,
     forgotCounts,
-    totalCards: deck.cards.length,
+    cardIds,
+    totalCards: cardIds.length,
   };
 }
 

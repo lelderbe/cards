@@ -14,6 +14,7 @@ const start: StudySession = {
   queue: ['a', 'b'],
   isFlipped: false,
   forgotCounts: {},
+  cardIds: ['a', 'b'],
   totalCards: 2,
 };
 

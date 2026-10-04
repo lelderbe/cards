@@ -4,6 +4,7 @@ import { StatusMessage } from '../components/StatusMessage.tsx';
 import { restoreSession, type StudySession } from '../domain/studySession.ts';
 import type { Deck, Direction } from '../domain/types.ts';
 import { db } from '../storage/db.ts';
+import { getDeck } from '../storage/decks.ts';
 import { formatCardCount, formatDirection } from './format.ts';
 import styles from './DeckScreen.module.css';
 
@@ -11,13 +12,14 @@ type DeckScreenProps = {
   deckId: string;
   lastDirection: Direction;
   onBack: () => void;
+  onEdit: (deckId: string) => void;
   onStart: (deck: Deck, direction: Direction) => void;
   onContinue: (deck: Deck, session: StudySession) => void;
 };
 
 export function DeckScreen({ deckId, ...props }: DeckScreenProps) {
   const data = useLiveQuery(async () => {
-    const [deck, saved] = await Promise.all([db.decks.get(deckId), db.activeSessions.get(deckId)]);
+    const [deck, saved] = await Promise.all([getDeck(deckId), db.activeSessions.get(deckId)]);
     return { deck, saved };
   }, [deckId]);
 
@@ -39,6 +41,7 @@ function DeckDetails({
   unfinishedSession,
   lastDirection,
   onBack,
+  onEdit,
   onStart,
   onContinue,
 }: DeckDetailsProps) {
@@ -58,6 +61,9 @@ function DeckDetails({
       <header className={styles.header}>
         <button className={styles.back} type="button" onClick={onBack}>
           ← Пачки
+        </button>
+        <button className={styles.edit} type="button" onClick={() => onEdit(deck.id)}>
+          Изменить
         </button>
       </header>
 
@@ -82,7 +88,9 @@ function DeckDetails({
           ))}
         </div>
 
-        {unfinishedSession ? (
+        {deck.cards.length === 0 && <p className={styles.empty}>В пачке нет карточек</p>}
+
+        {unfinishedSession && (
           <div className={styles.actions}>
             <button
               className={styles.primary}
@@ -99,7 +107,9 @@ function DeckDetails({
               Начать заново
             </button>
           </div>
-        ) : (
+        )}
+
+        {deck.cards.length > 0 && !unfinishedSession && (
           <button className={styles.primary} type="button" onClick={handleStart}>
             Начать
           </button>

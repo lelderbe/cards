@@ -45,6 +45,11 @@ describe('createSession', () => {
     expect(session.forgotCounts).toEqual({});
   });
 
+  it('remembers the cards it started with', () => {
+    const session = createSession(deck, 'front-to-back', () => 0);
+    expect(session.cardIds).toEqual(['a', 'b', 'c', 'd']);
+  });
+
   it('takes the session id from the given generator', () => {
     const session = createSession(deck, 'front-to-back', keepOrder, () => 'session-1');
     expect(session.id).toBe('session-1');
@@ -195,6 +200,7 @@ describe('restoreSession', () => {
     queue: ['c', 'a', 'd'],
     isFlipped: true,
     forgotCounts: { a: 2, b: 1 },
+    cardIds: ['a', 'b', 'c', 'd'],
     totalCards: 4,
   };
 
@@ -216,7 +222,19 @@ describe('restoreSession', () => {
     const restored = restoreSession(saved, smallerDeck);
     expect(restored?.queue).toEqual(['c', 'd']);
     expect(restored?.forgotCounts).toEqual({ b: 1 });
+    expect(restored?.cardIds).toEqual(['b', 'c', 'd']);
     expect(restored?.totalCards).toBe(3);
+  });
+
+  it('leaves out cards added to the deck after the start', () => {
+    const biggerDeck: Deck = {
+      ...deck,
+      cards: [...deck.cards, { id: 'e', front: 'egg', back: 'яйцо' }],
+    };
+    const restored = restoreSession(saved, biggerDeck);
+    expect(restored?.queue).toEqual(['c', 'a', 'd']);
+    expect(restored?.cardIds).toEqual(['a', 'b', 'c', 'd']);
+    expect(restored?.totalCards).toBe(4);
   });
 
   it('returns undefined when no queued card is left in the deck', () => {

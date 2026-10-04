@@ -17,3 +17,10 @@ export function formatDirection(deck: Deck, direction: Direction) {
     ? `${frontLabel} → ${backLabel}`
     : `${backLabel} → ${frontLabel}`;
 }
+
+/** «Удалить 1 карточку / 3 карточки / 5 карточек» — the accusative form after a verb. */
+export function formatCardCountAccusative(count: number) {
+  const lastTwoDigits = count % 100;
+  if (count % 10 === 1 && lastTwoDigits !== 11) return `${count} карточку`;
+  return formatCardCount(count);
+}

@@ -3,8 +3,10 @@ import { StatusMessage } from './components/StatusMessage.tsx';
 import type { AnswerLogEntry } from './domain/answerLog.ts';
 import { createSession, type StudySession } from './domain/studySession.ts';
 import type { Deck, Direction } from './domain/types.ts';
+import { CreateDeckScreen } from './screens/CreateDeckScreen.tsx';
 import { DeckListScreen } from './screens/DeckListScreen.tsx';
 import { DeckScreen } from './screens/DeckScreen.tsx';
+import { EditDeckScreen } from './screens/EditDeckScreen.tsx';
 import { ResultsScreen } from './screens/ResultsScreen.tsx';
 import { StudyScreen } from './screens/StudyScreen.tsx';
 import { db } from './storage/db.ts';
@@ -15,7 +17,9 @@ type StorageStatus = 'opening' | 'ready' | 'failed';
 
 type AppState =
   | { screen: 'decks' }
+  | { screen: 'create' }
   | { screen: 'deck'; deckId: string }
+  | { screen: 'edit'; deckId: string }
   | { screen: 'study'; deck: Deck; session: StudySession; sessionNumber: number }
   | { screen: 'results'; deck: Deck; session: StudySession };
 
@@ -68,6 +72,14 @@ function App() {
     setState({ screen: 'deck', deckId });
   }
 
+  function openDeckCreation() {
+    setState({ screen: 'create' });
+  }
+
+  function openEditor(deckId: string) {
+    setState({ screen: 'edit', deckId });
+  }
+
   function openDeckList() {
     setState({ screen: 'decks' });
   }
@@ -93,14 +105,26 @@ function App() {
 
   return (
     <main>
-      {state.screen === 'decks' && <DeckListScreen onOpenDeck={openDeck} />}
+      {state.screen === 'decks' && (
+        <DeckListScreen onOpenDeck={openDeck} onCreateDeck={openDeckCreation} />
+      )}
+      {state.screen === 'create' && <CreateDeckScreen onSaved={openDeck} onCancel={openDeckList} />}
       {state.screen === 'deck' && (
         <DeckScreen
           deckId={state.deckId}
           lastDirection={lastDirection}
           onBack={openDeckList}
+          onEdit={openEditor}
           onStart={handleStart}
           onContinue={handleContinue}
+        />
+      )}
+      {state.screen === 'edit' && (
+        <EditDeckScreen
+          deckId={state.deckId}
+          onSaved={openDeck}
+          onCancel={() => openDeck(state.deckId)}
+          onDeleted={openDeckList}
         />
       )}
       {state.screen === 'study' && (

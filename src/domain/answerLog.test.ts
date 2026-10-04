@@ -8,6 +8,7 @@ const session: StudySession = {
   queue: ['b', 'a'],
   isFlipped: false,
   forgotCounts: {},
+  cardIds: ['a', 'b'],
   totalCards: 2,
 };
 
